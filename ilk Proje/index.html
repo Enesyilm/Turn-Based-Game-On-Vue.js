@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="index.css">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <div class="container">
+    <div class="headers">
+    <p>Player<br><span class="healthBox" :style="updateHealth">{{player}}</span></p><p> Monster<br><span class="healthBox" :style="updateHealthMonster">{{monster}}</span></p>
+    </div>
+    <div class="btnHolder">
+    <div v-if="!yeniOyun"><button @click="yeniOyun=true" :class="btnClass">Yeni Oyun</button></div>
+    <div v-else>
+        <button @click="attack" :class="btnClass"> Attack </button>
+        <button @click="specialAttack" :class="btnClass" class="orange">Special Attack</button>
+        <button @click="increaseHealth" :class="btnClass" class="green">Help</button>
+        <button @click="giveUp" :class="btnClass" class="red" >Give Up</button>
+        <div class="logLists">
+            <ul>
+            <li :style="{backgroundColor:log.colorName}" v-for="log in logList">{{log.attackerName}} tarafından {{log.amountName}} hasar</li>
+            
+            </ul>
+            </div>
+    </div>
+    </div>
+    
+    </div>
+    </div>
+    
+    <script>
+        new Vue({
+        el:'#app',
+        data:{
+            player:100,
+            yeniOyun:false,
+            monster:100,
+            btnClass:"btn",
+            attack_multiple:10,
+            playerAttack:10,
+            monsterAttack:10,
+            playerSpecialAttack:15,
+            monsterSpecialAttack:15,
+            logList:[]
+
+        },
+        methods:{
+            increaseHealth: function(){
+                
+                this.player+=10;
+                
+
+            },
+            attack:function(){
+                playerAttack=Math.ceil(Math.random()*this.attack_multiple);
+                monsterAttack=Math.ceil(Math.random()*this.attack_multiple);
+                this.monster-=monsterAttack
+                this.player-=playerAttack
+                this.logInput("Player",playerAttack);
+                this.logInput("Monster",monsterAttack);
+                
+
+            },
+            specialAttack:function(){
+                playerSpecialAttack=Math.ceil(Math.random()*this.attack_multiple);
+                monsterSpecialAttack=Math.ceil(Math.random()*this.attack_multiple);
+                this.monster-=monsterSpecialAttack
+                this.player-=playerSpecialAttack
+                this.logInput("Player",playerSpecialAttack);
+                this.logInput("Monster",monsterSpecialAttack);
+                
+
+
+            },
+            giveUp:function(){
+                this.restart("monster");
+            },
+            restart:function(winner){
+                var self=this
+                player=this.player;
+                monster=this.monster;
+                logList=this.logList;
+
+
+                setTimeout(function(){
+                    self.player=100;
+                    self.monster=100;
+                    self.logList.length=0;
+                    alert(`"Game Is Done ${winner} is win"`)
+                },2000)
+                
+            },
+            logInput:function(attacker,amount){
+                attacker=="Player"||attacker=="player"?color="#577BC1":color="#EC255A";
+                this.logList.push({attackerName:attacker,
+                    amountName:amount,colorName:color});
+                
+            }
+        },
+        computed:{
+            updateHealth:function(){
+                
+                return{
+                    width:this.player+"%",
+                    
+                }
+            },
+            updateHealthMonster:function(){
+                return{
+                    width:this.monster+"%",
+                    
+                }
+            },
+            
+
+        },
+        watch:{
+            player:function(value){
+                this.player<0?this.player=0:null;
+                this.player>100?this.player=100:null;
+                this.player<=0?this.restart("monster"):null;
+            },
+            monster:function(value){
+                this.monster<0?this.monster=0:null;
+                this.monster>100?this.monster=100:null;
+                this.monster<=0?this.restart("player"):null;
+
+            }
+
+        }
+        })
+        
+        
+    </script>
+</body>
+</html>
